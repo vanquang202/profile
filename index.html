@@ -398,6 +398,92 @@
 			bottom: 0;
 		}
 
+		.loading {
+			position: fixed;
+			top: 0;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			background: black;
+			z-index: 900000000;
+		}
+
+		.loading p {
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+		}
+
+		.lds-heart {
+			display: inline-block;
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+			width: 200px;
+			height: 200px;
+			transform: rotate(45deg);
+			transform-origin: 40px 40px;
+		}
+
+		.lds-heart div {
+			top: 32px;
+			left: 32px;
+			position: absolute;
+			width: 32px;
+			height: 32px;
+			background: #fff;
+			animation: lds-heart 1.2s infinite cubic-bezier(0.215, 0.61, 0.355, 1);
+		}
+
+		.lds-heart div:after,
+		.lds-heart div:before {
+			content: " ";
+			position: absolute;
+			display: block;
+			width: 32px;
+			height: 32px;
+			background: #fff;
+		}
+
+		.lds-heart div:before {
+			left: -24px;
+			border-radius: 50% 0 0 50%;
+		}
+
+		.lds-heart div:after {
+			top: -24px;
+			border-radius: 50% 50% 0 0;
+		}
+
+		@keyframes lds-heart {
+			0% {
+				transform: scale(0.95);
+			}
+
+			5% {
+				transform: scale(1.1);
+			}
+
+			39% {
+				transform: scale(0.85);
+			}
+
+			45% {
+				transform: scale(1);
+			}
+
+			60% {
+				transform: scale(0.95);
+			}
+
+			100% {
+				transform: scale(0.9);
+			}
+		}
+
+
 		#airwayGrid {
 
 			width: 100% !important;
@@ -558,6 +644,11 @@
 </head>
 
 <body>
+	<div class="loading">
+		<div class="lds-heart">
+			<div></div>
+		</div>
+	</div>
 	<!-- <div>
 		<img src="https://source.unsplash.com/kbwQXp3MBi4/800x1300" />
 	</div> -->
@@ -1053,6 +1144,13 @@ Description: Pure Vanilla JS Slider
 	</script>
 	<script>
 		HDS("#slider");
+	</script>
+	<script src="https://code.jquery.com/jquery-3.6.0.js"
+		integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
+	<script>
+		setTimeout(function () {
+			$('.loading').hide();
+		}, 3000);
 	</script>
 </body>
 
