@@ -1,0 +1,1059 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport"
+		content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+	<link rel="preconnect" href="https://fonts.gstatic.com">
+	<title>Văn Quảng </title>
+	<style>
+		html,
+		* {
+			font-family: 'Inter';
+			box-sizing: border-box;
+		}
+
+		body {
+			background-color: #fafafa;
+			line-height: 1.6;
+		}
+
+
+
+
+
+		body {
+			margin: 0;
+			padding: 10px;
+		}
+
+		#app {
+			-webkit-column-count: 4;
+			-moz-column-count: 4;
+			column-count: 4;
+			-webkit-column-gap: 15px;
+			-moz-column-gap: 15px;
+			column-gap: 15px;
+		}
+
+		#app img {
+			width: 100%;
+		}
+
+		.image-preview-container {
+			position: fixed;
+			top: 0;
+			left: 0;
+			z-index: 9999;
+			width: 100vw;
+			height: 100vh;
+			background: rgba(0, 0, 0, 0.6);
+			transition: all 0.3s;
+			display: none;
+			color: #fff;
+			will-change: transform;
+			user-select: none;
+		}
+
+		.image-preview-container.show {
+			animation: show 0.5s forwards;
+			-webkit-animation: show 0.5s forwards;
+		}
+
+		.image-preview-container.hiding .preview-header {
+			animation: opacityAnimation 0.5s forwards reverse;
+		}
+
+		.image-preview-container img {
+			transition: all 0.5s;
+			transform: translateX(var(--offsetX)) translateY(var(--offsetY)) translateZ(0) scale(var(--scale), var(--scale)) rotate(var(--rotate));
+		}
+
+		.image-preview-container .image-container {
+			width: 100% !important;
+			height: 100% !important;
+			overflow: hidden;
+		}
+
+		.image-preview-container .preview-header {
+			height: 60px;
+			background: rgba(0, 0, 0, 0.2);
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			padding: 0 2vw 0 1vw;
+			position: relative;
+			z-index: 90;
+			animation: opacityAnimation 0.5s forwards;
+		}
+
+		.image-preview-container .preview-header .nums {
+			display: flex;
+			justify-content: flex-start;
+			align-items: center;
+		}
+
+		.image-preview-container .preview-header .nums p {
+			font-weight: 300;
+			padding: 4px 8px;
+			font-size: 16px;
+		}
+
+		.image-preview-container .preview-header button {
+			background: none;
+			border: none;
+			outline: none;
+			font-size: 18px;
+			color: #fff;
+			padding: 4px 8px;
+			border-radius: 4px;
+			-webkit-border-radius: 4px;
+			-moz-border-radius: 4px;
+			-ms-border-radius: 4px;
+			-o-border-radius: 4px;
+			position: relative;
+		}
+
+		.image-preview-container .preview-header .tool-btn button {
+			margin-left: 2vw;
+		}
+
+		.image-preview-container .preview-header button:hover::after,
+		.image-preview-container .preview-header button:hover::before {
+			display: block;
+		}
+
+		.image-preview-container .preview-header button::before {
+			content: '';
+			position: absolute;
+			left: 50%;
+			top: calc(130% - 5px);
+			transform: translateX(-50%);
+			border-right: 5px solid transparent;
+			border-left: 5px solid transparent;
+			border-bottom: 5px solid #000;
+			display: none;
+		}
+
+		.image-preview-container .preview-header button::after {
+			content: attr(data-tooltip);
+			font-size: 12px;
+			position: absolute;
+			left: 50%;
+			top: 130%;
+			transform: translateX(-50%);
+			background: #000;
+			padding: 2px 5px;
+			white-space: nowrap;
+			-webkit-transform: translateX(-50%);
+			-moz-transform: translateX(-50%);
+			-ms-transform: translateX(-50%);
+			-o-transform: translateX(-50%);
+			border-radius: 2px;
+			-webkit-border-radius: 2px;
+			-moz-border-radius: 2px;
+			-ms-border-radius: 2px;
+			-o-border-radius: 2px;
+			display: none;
+		}
+
+		.image-preview-container .preview-header button:hover {
+			background: rgba(0, 0, 0, 0.2);
+			cursor: pointer;
+		}
+
+		#prev,
+		#next {
+			background: none;
+			border: none;
+			outline: none;
+			position: absolute;
+			top: 50%;
+			color: #f6f6f6;
+			padding: 20px 10px;
+			cursor: pointer;
+		}
+
+		#prev i,
+		#next i {
+			font-size: 24px;
+		}
+
+		#prev {
+			left: 1%;
+		}
+
+		#next {
+			right: 1%;
+		}
+
+		.zoom-in {
+			cursor: zoom-in;
+		}
+
+		.moving {
+			transition: none !important;
+			-webkit-transition: none !important;
+			-moz-transition: none !important;
+			-ms-transition: none !important;
+			-o-transition: none !important;
+		}
+
+		@keyframes show {
+			0% {
+				background: rgba(0, 0, 0, 0);
+			}
+
+			100% {
+				background: rgba(0, 0, 0, 0.6);
+			}
+		}
+
+		@keyframes opacityAnimation {
+			0% {
+				opacity: 0;
+			}
+
+			100% {
+				opacity: 1;
+			}
+		}
+
+		@font-face {
+			font-family: 'iconfont';
+			src: url('//at.alicdn.com/t/font_2387568_7n96d4x0sva.eot?t=1614436212405');
+			/* IE9 */
+			src: url('//at.alicdn.com/t/font_2387568_7n96d4x0sva.eot?t=1614436212405#iefix') format('embedded-opentype'),
+				/* IE6-IE8 */
+				url('data:application/x-font-woff2;charset=utf-8;base64,d09GMgABAAAAAAT4AAsAAAAACjAAAASqAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHEIGVgCDXgqGXIUtATYCJAMcCxAABCAFhG0HgQEbpggRFaRXkP0ocPcUUIQJE35oLZsytsFlXASH/P8RD//tx7pvZr5g2iCR4Ee6SRMNieSNBom6Ftqmsknrnm272avZT+9ZL5kSyYL4OoAruFgmd66mB+uXQDZXayVUeGYizL6S8eBfX0r6fOmkWbj7n2OmS2uw/GubS2VStY2Ge+MBDSj7ovRADvhO7OjUTwN23crPBD1NoNe0MMTq2MmzoVUomwJxWlKUA23IouSQQ6uvU04WiPvA16YB8ixwz/75+CwmRCCpMijP2j4Zkw+L7+B5CdJxOkjPRtC154JwjowOKMRdqucWkJvpIL2f38mzj0GtpH7nOfl84rnP88DnJRxHuFMZDYNqI1lRSfP650UNjKYf2ONszTvQ+WTekXwK72g+Fe981PK0gTAJaEugtaroRjfYQ+4XiC1gO03ah+KQ5TFC3eUXpVJ4eStVbZRJRxfkGzdsYh2LrHqHQgtDtdFmHZVfQKaNTFilT3OzdF0G0kGdnyuv4KJps6gqMFSOWW9us9rXr6UkV1/Pvn498caNJPbaDAmzUbeJllq3OBKWzX6YguvX3+Rr1xLeW6dgjjqR+Ji/csMJV2Q/nm6iFBYHpLdKlayZzmngvuuzh1ntmxlqtgnTCWZ2i91h6I2EisXmdRuWpJmwqXJswnMjYfLQkUnViZa9TjZ6yPXZHewsMNNK1kogvUWiMFFkVoByzJnUHd29/jiBVpzQ1LmB3RWXlpSWWkWjXbHRiI3NBuNGVxuEP3KDAVcmGbfJMNfmuhEG34wYcdbnLOiqEUrsrPdZlRc66nNUFZSkSDNvhEFXse7f92aFE849J7fOIZajy6/QclVoCo1DyYvHD52t8HH3ubj5oY98sztTkT54wvaE4iPo188M5RFWiMesI9+99FgG1zjWCyvfDOGP7Ed7JhXnrGMXiN+UBD6r34Y8Jrr3HrnSH18T0ozGDoijnXFWvsXWn5Vqc9V+mTe1grLglsj1h50bB08xXwW46p6Z0gd7tm3Y3xRSEVzPl1ldfVxwTrLNpT87727g9KijCa2oNqQ36vB5X0a0TrQA8xJ4/yv8QbxAzKlJ2OuskoO7nvjjWfgPm6Ed/H+TnuYAlvolz0Ey6tN8CA3K3fIQ0j97L/M45NqZLOXgbyIpD+BtdnM9LNz/ch4jwAOkVVr6pJkKkYP4p/jKFWtT3n10UeklCDQWZUol9KpDPF+BUffb0070JjF9rQkfksYUZK0ZZMF2UOkzD7XWAvSaM+58nzG1sihiYFYPQRi2A5JBTyAbdg5ZsPegMukd1IaxgUAiMbQ3SgVEiRrFqAU/8P6HYKhazS7KKb2h27PmoNymvJB7iMMaERXNX7Eit7Gnf90mYsEyFbjQ8zBngsYU0cjkRdp5jixM+6TJUBmUURjSBPoAb/9AYJDKmuOFin3/DXJ2mcY5PT+CL4h1YXqwmiwlkFdNLdVzLPO7L2cjhGXXWYwU4AIXymqGgJa+LEKGmPgaqeZsZgbZspqpf105zhPQS/lgEylylKiijiZawuug/4PDY53X1bmzTtoY2quMjUm0XzfhmLF3qqPJ1PHQ6qk6oygcm3ddbREMynWvwwAA') format('woff2'),
+				url('//at.alicdn.com/t/font_2387568_7n96d4x0sva.woff?t=1614436212405') format('woff'),
+				url('//at.alicdn.com/t/font_2387568_7n96d4x0sva.ttf?t=1614436212405') format('truetype'),
+				/* chrome, firefox, opera, Safari, Android, iOS 4.2+ */
+				url('//at.alicdn.com/t/font_2387568_7n96d4x0sva.svg?t=1614436212405#iconfont') format('svg');
+			/* iOS 4.1- */
+		}
+
+		.iconfont {
+			font-family: 'iconfont' !important;
+			font-size: 16px;
+			font-style: normal;
+			-webkit-font-smoothing: antialiased;
+			-moz-osx-font-smoothing: grayscale;
+		}
+
+		.icon-xiayige:before {
+			content: '\e627';
+		}
+
+		.icon-shangyige:before {
+			content: '\e622';
+		}
+
+		.icon-account-practice-lesson-close:before {
+			content: '\e600';
+		}
+
+		.icon-zhongzhi:before {
+			content: '\e602';
+		}
+
+		.icon-xuanzhuan:before {
+			content: '\e615';
+		}
+
+		.icon-xuanzhuan1:before {
+			content: '\e669';
+		}
+
+		@media screen and (max-width: 768px) {
+
+			.preview-header .nums p,
+			.preview-header .iconfont {
+				font-size: 12px !important;
+			}
+		}
+	</style>
+	<style>
+		* {
+			margin: 0;
+			padding: 0;
+			box-sizing: border-box;
+		}
+
+		:root {
+			--airplane-left-fill-color: #000000;
+			--airplane-right-fill-color: #000000;
+		}
+
+		body {
+			font-family: Arial, Helvetica, sans-serif;
+		}
+
+		#airwayGrid {
+			width: 100%;
+			height: 0px;
+
+			background: url('../assets/airway_grid_8x8.svg') repeat;
+
+			overflow: hidden;
+		}
+
+		.airplaneLine {
+			width: calc(100vw / 4);
+			height: 6px;
+		}
+
+		.airplaneLeft {
+			position: relative;
+
+			display: flex;
+			align-items: center;
+
+			right: 0;
+
+			transform: rotate(180deg);
+
+			-webkit-animation: ease-in-out infinite;
+			-webkit-animation-name: flyLeft;
+			-webkit-animation-duration: 13s;
+		}
+
+		.airplaneLeft svg {
+			fill: var(--airplane-left-fill-color);
+			transform: rotate(180deg);
+		}
+
+		.airplaneLeft .airplaneLine {
+			background: linear-gradient(270deg,
+					var(--airplane-left-fill-color) 0%,
+					rgba(163, 57, 227, 0) 100%);
+			opacity: 0.5;
+
+			margin-right: -15px;
+		}
+
+		.airplaneRight {
+			position: relative;
+
+			display: flex;
+			align-items: center;
+
+			-webkit-animation: ease-in-out infinite;
+			-webkit-animation-name: flyRight;
+			-webkit-animation-duration: 10s;
+		}
+
+		.airplaneRight svg {
+			fill: var(--airplane-right-fill-color);
+			transform: rotate(180deg);
+		}
+
+		.airplaneRight .airplaneLine {
+			background: linear-gradient(270deg,
+					var(--airplane-right-fill-color) 0%,
+					rgba(163, 57, 227, 0) 100%);
+			opacity: 0.5;
+
+			margin-right: -15px;
+		}
+
+		.airplane svg {
+			margin-left: -20px;
+		}
+
+		@-webkit-keyframes flyRight {
+			0% {
+				left: calc(0px - ((100vw / 4) + 30px));
+			}
+
+			100% {
+				left: 100%;
+			}
+		}
+
+		@-webkit-keyframes flyLeft {
+			0% {
+				right: calc(0px - ((100vw / 4) + 30px));
+			}
+
+			100% {
+				right: 100%;
+			}
+		}
+	</style>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Anton&display=swap" rel="stylesheet">
+	<style>
+		* {
+			font-family: 'Anton', sans-serif;
+		}
+
+		.aossss {
+			position: fixed;
+			top: 0;
+			left: 0;
+			right: 0;
+			bottom: 0;
+		}
+
+		#airwayGrid {
+
+			width: 100% !important;
+			height: 100% !important;
+		}
+
+		.av {
+			box-shadow: rgb(0 0 0 / 30%) 0px 19px 38px, rgb(0 0 0 / 22%) 0px 15px 12px;
+			width: 30%;
+			position: absolute;
+			top: 0;
+			z-index: 10000;
+			left: 0;
+			border-bottom-right-radius: 20px;
+			background-color: white;
+			align-items: center;
+			padding: 10px;
+			text-align: center;
+		}
+
+		h1 {
+			font-size: 30px !important;
+		}
+
+		.imgg {
+			width: 100px !important;
+			height: 100px !important;
+			border-radius: 50%;
+		}
+
+		.main-c {
+			z-index: 1000000;
+			width: 80%;
+			height: 80%;
+			overflow: hidden;
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+			background: rgb(69, 68, 68);
+			border-radius: 50px;
+			box-shadow: rgb(0 0 0 / 30%) 0px 19px 38px, rgb(0 0 0 / 22%) 0px 15px 12px;
+
+		}
+
+		.posi {
+			position: absolute;
+			text-align: center;
+		}
+
+		.footer {
+			z-index: 1000000;
+			width: 200px;
+			height: 60px;
+			position: absolute;
+			bottom: 10px;
+			left: 50%;
+			background-color: white;
+			padding: 10px;
+			transform: translateX(-50%);
+			border-radius: 50px;
+			box-shadow: rgb(0 0 0 / 30%) 0px 19px 38px, rgb(0 0 0 / 22%) 0px 15px 12px;
+		}
+
+		.ft-icon {
+			width: 100%;
+			height: 100%;
+			border-radius: 50%;
+		}
+
+		.ft-icon:hover {}
+	</style>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css">
+
+	<style>
+		html {
+			-webkit-box-sizing: border-box;
+			-moz-box-sizing: border-box;
+			box-sizing: border-box;
+		}
+
+		*,
+		*:before,
+		*:after {
+			-webkit-box-sizing: inherit;
+			-moz-box-sizing: inherit;
+			box-sizing: inherit;
+		}
+
+		* {
+			-webkit-font-smoothing: antialiased;
+			-moz-osx-font-smoothing: grayscale;
+		}
+
+		html,
+		body {
+			margin: 0;
+			padding: 0;
+			height: 100%;
+			width: 100%;
+			font-size: 22px;
+			line-height: 1.6;
+			color: #4a4a4a;
+			font-family: sans-serif;
+			overflow-x: hidden;
+			background: #fefefe;
+		}
+
+		img {
+			max-width: 100%;
+			height: auto;
+		}
+
+		.slide {
+			display: grid;
+			text-align: center;
+			place-items: center;
+		}
+
+		.slide_content {
+			max-width: 800px;
+			color: #fff;
+			font-size: 2rem;
+		}
+
+		h3 {
+			font-size: 1.4rem;
+			color: aquamarine;
+			margin: 0;
+		}
+
+		p {
+			margin: 0;
+		}
+
+		.button {
+			text-decoration: none;
+			color: #fff;
+			border: 3px solid aquamarine;
+			padding: 0.4em 1em;
+			font-size: 1rem;
+		}
+
+		.overlay {
+			position: absolute;
+			z-index: -1;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			opacity: 0.6;
+			background: linear-gradient(90deg,
+					rgba(2, 0, 36, 1) 0%,
+					rgba(9, 9, 121, 1) 35%,
+					rgba(0, 212, 255, 1) 100%);
+		}
+	</style>
+</head>
+
+<body>
+	<!-- <div>
+		<img src="https://source.unsplash.com/kbwQXp3MBi4/800x1300" />
+	</div> -->
+	<div class="aossss">
+
+		<div id="airwayGrid">
+			<div class="main-c">
+				<div class="av row">
+					<h1 class="  ">Trần Văn Quảng</h1>
+				</div>
+				<div>
+
+					<div style="height: 80vh !important" id="slider">
+						<div class="slide" style="background-image: url(https://source.unsplash.com/random/1)">
+							<div class="slide_content">
+								<h3>Sinh nhật</h3>
+								</h3>
+								<p>08-12-2002</p>
+							</div>
+							<div class="overlay"></div>
+						</div>
+						<div class="slide" style="background-image: url(https://source.unsplash.com/random/2)">
+							<div class="slide_content">
+								<h3>Quê quán </h3>
+								<p>Nam Định </p>
+							</div>
+							<div class="overlay"></div>
+						</div>
+						<div class="slide" style="background-image: url(https://source.unsplash.com/random/3)">
+							<div class="slide_content">
+								<h3>Học vấn </h3>
+								<p>Cao đẳng FPT Polytechnic </p>
+							</div>
+							<div class="overlay"></div>
+						</div>
+						<div class="slide" style="background-image: url(https://source.unsplash.com/random/4)">
+							<div class="slide_content">
+								<h3>Chuyên ngành </h3>
+								<p>Thiết kế website ( Backend developer )</p>
+							</div>
+							<div class="overlay"></div>
+						</div>
+					</div>
+
+				</div>
+				<div class="footer row">
+					<div class="  col-4">
+
+						<a href="https://www.facebook.com/profile.php?id=100043580224006" class="ft-icon">
+							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+								<!--! Font Awesome Pro 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. -->
+								<path
+									d="M504 256C504 119 393 8 256 8S8 119 8 256c0 123.78 90.69 226.38 209.25 245V327.69h-63V256h63v-54.64c0-62.15 37-96.48 93.67-96.48 27.14 0 55.52 4.84 55.52 4.84v61h-31.28c-30.8 0-40.41 19.12-40.41 38.73V256h68.78l-11 71.69h-57.78V501C413.31 482.38 504 379.78 504 256z" />
+							</svg>
+						</a>
+					</div>
+					<div class="  col-4">
+
+						<a href="https://github.com/vanquang202" class="ft-icon">
+							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512">
+								<!--! Font Awesome Pro 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. -->
+								<path
+									d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z" />
+							</svg>
+						</a>
+					</div>
+					<div class="  col-4">
+						<a href="https://www.hackerrank.com/kopopi593" class="ft-icon">
+							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+								<!--! Font Awesome Pro 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. -->
+								<path
+									d="M477.5 128C463 103.05 285.13 0 256.16 0S49.25 102.79 34.84 128s-14.49 230.8 0 256 192.38 128 221.32 128S463 409.08 477.49 384s14.51-231 .01-256zM316.13 414.22c-4 0-40.91-35.77-38-38.69.87-.87 6.26-1.48 17.55-1.83 0-26.23.59-68.59.94-86.32 0-2-.44-3.43-.44-5.85h-79.93c0 7.1-.46 36.2 1.37 72.88.23 4.54-1.58 6-5.74 5.94-10.13 0-20.27-.11-30.41-.08-4.1 0-5.87-1.53-5.74-6.11.92-33.44 3-84-.15-212.67v-3.17c-9.67-.35-16.38-1-17.26-1.84-2.92-2.92 34.54-38.69 38.49-38.69s41.17 35.78 38.27 38.69c-.87.87-7.9 1.49-16.77 1.84v3.16c-2.42 25.75-2 79.59-2.63 105.39h80.26c0-4.55.39-34.74-1.2-83.64-.1-3.39.95-5.17 4.21-5.2 11.07-.08 22.15-.13 33.23-.06 3.46 0 4.57 1.72 4.5 5.38C333 354.64 336 341.29 336 373.69c8.87.35 16.82 1 17.69 1.84 2.88 2.91-33.62 38.69-37.58 38.69z" />
+							</svg>
+						</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script>
+		const defaultConfig = {
+			height: 130,
+			lazy: true,
+			backgroundColor: '',
+			resizable: false,
+			colorFromLeft: 'blue',
+			colorFromRight: 'red',
+			log: false,
+		};
+
+		function getRandomSeconds(min, max) {
+			min = Math.ceil(min);
+			max = Math.floor(max);
+			return Math.floor(Math.random() * (max - min) + min) * 1000;
+		}
+
+		class Airway {
+			container;
+			config;
+			interval = null;
+
+			constructor(container, config) {
+				this.setContainer(container);
+				this.config = { ...defaultConfig, ...config };
+			}
+
+			#log(msg, type) {
+				if (!this.config.log) return;
+
+				if (console[type]) {
+					console[type](msg);
+					return;
+				}
+
+				console.log(msg);
+			}
+
+			setContainer(container) {
+				if (typeof container === 'string') {
+					return (this.container = document.querySelector(container));
+				}
+
+				this.container = document.querySelector(container);
+			}
+
+			setConfig(config) {
+				this.config = { ...defaultConfig, ...config };
+			}
+
+			configContainer() {
+				this.container.style.background = this.config.background;
+				this.container.style.height = `${this.config.height}px`;
+
+				if (this.config.resizable) this.container.style.resize = 'vertical';
+
+				document.documentElement.style.setProperty(
+					'--airplane-left-fill-color',
+					this.config.colorFromLeft,
+				);
+				document.documentElement.style.setProperty(
+					'--airplane-right-fill-color',
+					this.config.colorFromRight,
+				);
+			}
+
+			generateAirplane() {
+				const randomClass = Math.random() < 0.5 ? 'airplaneRight' : 'airplaneLeft';
+				const randomPlane = `
+        <div class="${randomClass} airplaneContent">
+            <div class="airplaneLine"></div>
+            <svg width="34" height="32" viewBox="0 0 34 32" fill="currentColor" xmlns="http://www.w3.org/2000/svg" >
+                <path d="M23.579 -8.39233e-05H20.2106L11.7895 13.4736H2.52632C1.12842 13.4736 0 14.6021 0 16C0 17.3979 1.12842 18.5263 2.52632 18.5263H11.7895L20.2106 32H23.579L19.3685 18.5263H28.6317L31.158 21.8947H33.6843L32.0001 16L33.6843 10.1052H31.158L28.6317 13.4736H19.3685L23.579 -8.39233e-05Z" />
+            </svg>
+        </div>
+        `;
+
+				this.container.insertAdjacentHTML('beforeend', randomPlane);
+			}
+
+			clearAirplanes(maxLimit) {
+				const airplanesFlying = this.container.querySelectorAll('.airplaneContent');
+
+				airplanesFlying.forEach((airplane, index) => {
+					if (index > maxLimit - 1) {
+						airplane.remove();
+						this.#log('Airplane removed');
+					}
+				});
+			}
+
+			updateTimeout() {
+				const time = this.config.lazy
+					? getRandomSeconds(3, 6)
+					: getRandomSeconds(0, 0);
+				const airplaneCount =
+					this.container.querySelectorAll('.airplaneContent').length;
+
+				const containerHeightLimit = this.container.offsetHeight;
+				const airplaneCountLimit = Math.floor(containerHeightLimit / 32);
+
+				this.#log(
+					`INFO: This container fits: ${airplaneCountLimit} airplane(s) and currently we have: ${airplaneCount} airplane(s) flying!`,
+					'warn',
+				);
+
+				if (airplaneCount >= airplaneCountLimit) {
+					this.clearAirplanes(airplaneCountLimit);
+				} else {
+					this.generateAirplane();
+				}
+
+				clearInterval(this.myInterval);
+
+				if (airplaneCount < airplaneCountLimit)
+					this.myInterval = setInterval(() => this.updateTimeout.call(this), time);
+				else {
+					this.#log('INFO: Airplane limit reached!', 'info');
+				}
+			}
+
+			executeAirplanes() {
+				this.configContainer();
+				this.interval = setInterval(() => this.updateTimeout.call(this), 0);
+
+				const containerHeight = this.container.offsetHeight;
+
+				new ResizeObserver(() => {
+					const newContainerHeight = this.container.offsetHeight;
+					if (containerHeight === newContainerHeight) return;
+
+					this.#log(`Container has been resized to: ${newContainerHeight}`);
+					this.updateTimeout();
+				}).observe(this.container);
+			}
+		}
+
+		/**
+		 * Client Code
+		 */
+		const myAirway = new Airway('#airwayGrid', {
+			height: '200',
+			colorFromLeft: '#a339e3',
+			colorFromRight: '#2ec662',
+			resizable: false,
+			lazy: false,
+		});
+
+		myAirway.executeAirplanes();
+	</script>
+
+	<script>
+		/*!
+	 * ImgPreviewer v1.0.4
+	 * https://github.com/yue1123/img-previewer
+	 *
+	 * Copyright 2021-present dh
+	 * Released under the MIT license
+	 *
+	 * Date: 2021-05-05T13:48:45.677Z
+	 */
+		!function (e, t) { "object" == typeof exports && "undefined" != typeof module ? module.exports = t() : "function" == typeof define && define.amd ? define(t) : (e = "undefined" != typeof globalThis ? globalThis : e || self).ImgPreviewer = t() }(this, (function () { "use strict"; function e(e, t) { if (!(e instanceof t)) throw new TypeError("Cannot call a class as a function") } function t(e, t) { for (var n = 0; n < t.length; n++) { var i = t[n]; i.enumerable = i.enumerable || !1, i.configurable = !0, "value" in i && (i.writable = !0), Object.defineProperty(e, i.key, i) } } function n(e, t) { var n = null; return function (i) { clearTimeout(n), n = setTimeout((function () { e(i), clearTimeout(n) }), t) } } function i(e) { e.preventDefault() } function o(e, t, n) { var i = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame, o = window.cancelAnimationFrame || window.mozCancelAnimationFrame, s = t.start || 0, a = t.end || 0, c = t.step, l = null; !function d() { c > 0 && s < a || c < 0 && s > a ? (s += c, e.style[t.style] = t.template.replace("$", s), l = i(d)) : (n && n(), o(l)) }() } function s(e, t, n) { var i = u * n / e, o = r * n / t; return i > o ? o : i } function a(e, t, n, i, o) { e.style.cssText = "width:".concat(t, "px;height:").concat(n, "px;position:fixed; top:").concat(o, "px; left:").concat(i, "px;") } function c(e) { m.style.display = e ? "block" : "none" } function l(e) { d.style.overflow = e ? "auto" : "hidden" } var d, r, u, m = null, h = null, f = null, g = 0, p = { ratio: .9, zoom: { min: .1, max: 5, step: .1 }, opacity: .6, scrollbar: !0 }; return function () { function v(t) { var n = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : {}; if (e(this, v), this.index = 0, this.selector = t, this.options = n, this.imageElements = [], n.zoom = Object.assign({}, p.zoom, n.zoom || {}), this.config = Object.assign({}, p, n), !t || "string" != typeof t) throw new Error("ImagePreviewer plugin should css string selector that on first params,like #el,.el"); var i = document.querySelector(t); if (!i) throw new Error("selector is invalid"); this.init() } var y, w, x; return y = v, x = [{ key: "setImageAnimationParams", value: function (e) { h.style.setProperty("--offsetX", "".concat(e.endX, "px")), h.style.setProperty("--offsetY", "".concat(e.endY + 30, "px")), h.style.setProperty("--scale", "".concat(e.scale)), h.style.setProperty("--rotate", "".concat(e.rotate, "deg")) } }], (w = [{ key: "update", value: function () { var e = this; this.imageElements = document.querySelectorAll("".concat(this.selector, " img:not(#preview-image)")), this.imageElements.forEach((function (t, n) { t.onclick = null, t.onclick = function (t) { e.handleOpen(t, n), c(!0), e.updateIndex(n) } })) } }, { key: "bindEvent", value: function () { var e = this, t = /Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(window.navigator.userAgent), o = t ? "touchstart" : "mousedown", s = t ? "touchend" : "mouseup", a = t ? "touchmove" : "mousemove"; this.imageElements.forEach((function (t, n) { t.onclick = function (t) { e.handleOpen(t, n), c(!0), e.updateIndex(n) } })), document.getElementById("close").addEventListener("click", (function () { e.handleClose() })), document.getElementById("reset").addEventListener("click", (function () { e.handleReset() })), document.getElementById("prev").addEventListener("click", (function () { e.prev() })), document.getElementById("next").addEventListener("click", (function () { e.next() })), m.addEventListener("click", (function (t) { "image-container" === t.target.classList[0] && e.handleClose() })), h.addEventListener(o, (function (e) { var t = e.clientX - h.offsetLeft, n = e.clientY - h.offsetTop; this.classList.add("moving"), this["on".concat(a)] = function (e) { var i = e.clientX - t, o = e.clientY - n; this.style.left = "".concat(i, "px"), this.style.top = "".concat(o, "px") }, this["on".concat(s)] = function () { this.classList.remove("moving"), this.onmousemove = null }, this.onmouseout = function () { this.classList.remove("moving"), this.onmousemove = null } })), h.addEventListener("mousewheel", (function (t) { var n = e.config.zoom, i = n.min, o = n.max, s = n.step; t.wheelDelta > 0 && g < o ? g += s : g > i && (g -= s), h.style.setProperty("--scale", "".concat(g.toFixed(2))) }), !0), document.getElementById("rotate-right").addEventListener("click", (function () { e.handelRotateRight() })), document.getElementById("rotate-left").addEventListener("click", (function () { e.handelRotateLeft() })), m.addEventListener("mousewheel", i), document.ondragstart = i, document.ondragend = i, window.onresize = n.bind(null, (function () { e.handleClose(), u = window.innerWidth, r = window.innerHeight }), 100)() } }, { key: "handleReset", value: function () { h.style.top = "".concat(f.startY, "px"), h.style.left = "".concat(f.startX, "px"), h.style.setProperty("--rotate", "".concat(0, "deg")), h.style.setProperty("--scale", "".concat(f.scale)), f.rotate = 0 } }, { key: "handleOpen", value: function (e, t) { var n = this.config.ratio, i = this.imageElements, o = e.target, c = o.width, d = o.height, p = e.clientX - e.offsetX, y = e.clientY - e.offsetY + 1; g = s(c, d, n), f = { startX: p, startY: y, endX: u / 2 - c / 2 - p, endY: r / 2 - d / 2 - y, scale: g, rotate: 0 }, h.src = i[t].src, a(h, c, d, p, y), setTimeout((function () { v.setImageAnimationParams(f) })), m.classList.add("show"), !this.config.scrollbar && l(!1) } }, { key: "handleClose", value: function () { var e, t, n, i, s, a = this.config.opacity, d = this.imageElements[this.index]; if (e = d, t = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight, n = e.offsetTop, i = e.offsetHeight, s = document.documentElement.scrollTop, i + n > s && n - s <= t + 100) { o(m, { start: a, end: 0, step: -.02, style: "background", template: "rgba(0, 0, 0, $)" }, (function () { h.style = "", h.src = "", m.style.background = "", m.classList.remove("hiding"), c(!1) })); var r = function (e) { return e.getBoundingClientRect() }(d), u = r.top, f = r.left, g = r.width, p = r.height; h.style.cssText = "width:".concat(g, "px;height:").concat(p, "px;position: fixed; top: ").concat(u, "px; left: ").concat(f, "px;") } else h.style.display = "none", o(m, { start: a, end: 0, step: -.05, style: "background", template: "rgba(0, 0, 0, $)" }, (function () { h.src = "", h.style = "", m.style = "", m.classList.remove("hiding"), c(!1) })); m.classList.remove("show"), m.classList.add("hiding"), !this.config.scrollbar && l(!0) } }, { key: "handelRotateLeft", value: function () { f.rotate -= 90, h.style.setProperty("--rotate", "".concat(f.rotate, "deg")) } }, { key: "handelRotateRight", value: function () { f.rotate += 90, h.style.setProperty("--rotate", "".concat(f.rotate, "deg")) } }, { key: "prev", value: function () { 0 !== this.index && (this.index -= 1, this.updateIndex(this.index), this.useIndexUpdateImage(this.index)) } }, { key: "next", value: function () { this.index < this.imageElements.length - 1 && (this.index += 1, this.updateIndex(this.index), this.useIndexUpdateImage(this.index)) } }, { key: "useIndexUpdateImage", value: function (e) { var t = this.config.ratio, n = this.imageElements[e], i = n.height, o = n.width, c = n.src; h.classList.add("moving"), a(h, o, i, u / 2 - o / 2, r / 2 - i / 2), f = { endX: 0, endY: 0, scale: s(o, i, t), rotate: 0 }, h.src = c, v.setImageAnimationParams(f), setTimeout((function () { h.classList.remove("moving") })) } }, { key: "updateIndex", value: function (e) { this.index = e, document.getElementById("total-nums").innerText = this.imageElements.length, document.getElementById("current-index").innerText = e + 1 } }, { key: "render", value: function () { var e = document.getElementById("image-preview-container"); e ? m = e : ((m = document.createElement("div")).classList.add("image-preview-container"), m.id = "image-preview-container", m.innerHTML = '<div class="preview-header">\n                        <div class="nums">\n\n                            <p>\n                                <span id="current-index"></span>\n                                &nbsp;/&nbsp;\n                                <span id="total-nums"></span>\n                            </p>\n\n                        </div>\n                        <div class="tool-btn">\n                            <button id="rotate-left" data-tooltip="Rotate Right"><i class="iconfont icon-xuanzhuan"></i></button>\n                            <button id="rotate-right" data-tooltip="Rotate Left"><i class="iconfont icon-xuanzhuan1"></i></button>\n                            <button id="reset" data-tooltip="Reset"><i class="iconfont icon-zhongzhi"></i></button>\n                            <button id="close" data-tooltip="Close"><i class="iconfont icon-account-practice-lesson-close"></i></button>\n                        </div>\n                    </div>\n                    <div class="image-container">\n                        <button id="prev" data-tooltip="Prev"><i class="iconfont icon-shangyige"></i></button>\n                        <div class="img-content" id="image-content"><img id="preview-image" src="" alt="" /></div>\n                        <button id="next" data-tooltip="Next"><i class="iconfont icon-xiayige"></i></button>\n                    </div>', d.appendChild(m)), h = document.getElementById("preview-image") } }, { key: "init", value: function () { d = document && document.body || document.getElementsByTagName("body")[0], u = window.innerWidth, r = window.innerHeight, this.imageElements = document.querySelectorAll("".concat(this.selector, " img")); for (var e = 0, t = this.imageElements.length; e < t; e++)this.imageElements[e].classList.add("zoom-in"); this.render(), this.updateIndex(this.index), this.bindEvent(this.imageElements), this.options.onInited && this.options.onInited() } }]) && t(y.prototype, w), x && t(y, x), v }() }));
+	</script>
+	<script>
+		const a = new ImgPreviewer('body', {
+			scrollbar: true
+		})
+		function add() {
+			let img = document.createElement('img')
+			img.src = `https://picsum.photos/500/500?random=${Math.random()}`
+			img.onload = function () {
+				document.getElementById('app').appendChild(img)
+				a.update()
+			}
+		}
+		document.getElementById('add').onclick = add
+	</script>
+
+	<style>
+		/*
+Project Name: HDSlider
+Project URI: https://harmonicdesign.ca
+Author: Harmonic Design
+Author URI: https://harmonicdesign.ca
+Description: Pure Vanilla JS Slider
+*/
+
+		.hds_slider {
+			height: 100vh;
+			position: relative;
+			background-color: black;
+			--slide-transition-speed: 600ms;
+		}
+
+		.hds_slide {
+			height: 100%;
+			width: 100%;
+			z-index: 0;
+			opacity: 0;
+			position: absolute;
+			top: 0;
+			left: 0;
+			background-size: cover;
+			transition: all ease-in-out var(--slide-transition-speed);
+			top: -100%;
+		}
+
+		.hds_slide_active {
+			z-index: 1;
+			opacity: 1;
+			transition: all ease-in-out var(--slide-transition-speed);
+			top: 0;
+		}
+
+		.hds_nav_item {
+			position: absolute;
+			top: calc((50% - 1.5rem));
+			color: #fff;
+			height: 3rem;
+			width: 3rem;
+			display: flex;
+			border: 1px solid #fff;
+			justify-content: center;
+			align-items: center;
+			font-size: 32px;
+			cursor: pointer;
+			z-index: 2;
+			border-radius: 50%;
+		}
+
+		.hds_prev {
+			left: 2rem;
+		}
+
+		.hds_next {
+			right: 2rem;
+		}
+
+		.hds_pagination {
+			position: absolute;
+			bottom: 1.5rem;
+			z-index: 2;
+			display: flex;
+			width: 100%;
+			justify-content: center;
+		}
+
+		.hds_pagination_item {
+			width: 16px;
+			height: 16px;
+			border-radius: 50%;
+			background-color: #4a4a4a;
+			margin: 0 0.2em;
+			cursor: pointer;
+		}
+
+		.hds_pagination_item_active {
+			background-color: #fff;
+			cursor: default;
+		}
+	</style>
+	<script>
+		const HDS = function (el = null, options = {}) {
+			class slider {
+				constructor(options) {
+					this.delay = 0; // delay in ms to begin the timer
+					this.speed = 5000; // time in ms 'till next slide
+					this.transition = 600; // time in ms for animation speed
+					this.pagination = true;
+					this.navigation = true;
+
+					for (const k in options) {
+						this[k] = options[k];
+					}
+
+					this.delay = parseInt(this.delay);
+					this.speed = parseInt(this.speed);
+					this.transition = parseInt(this.transition);
+				}
+			}
+
+			const $ = {
+				VARS: {
+					slider: null,
+					slides: null,
+					options: {},
+					timer: null,
+					pagination: null,
+				},
+				init: async function () {
+					if (el === null) {
+						console.error("Please select a container for the slider");
+						return;
+					}
+					$.VARS.slider = document.querySelector(el);
+					$.VARS.options = new slider(options);
+
+					await $.create();
+				},
+				create: async function () {
+					const slides = document.createElement("div");
+					slides.classList.add("hds_slides_container");
+
+					const content = $.VARS.slider.innerHTML;
+					slides.innerHTML = content;
+					$.VARS.slider.innerHTML = "";
+					$.VARS.slider.append(slides);
+					$.VARS.slider.classList.add("hds_slider");
+
+					$.VARS.slides = $.VARS.slider.getElementsByClassName("hds_slides_container")[0].children;
+					for (let i = 0; i < $.VARS.slides.length; i++) {
+						$.VARS.slides[i].classList.add("hds_slide");
+					}
+
+					$.VARS.slider.style.setProperty("--slide-transition-speed", $.VARS.options.transition + "ms");
+
+					if ($.VARS.options.navigation === true) {
+						$.navigation();
+					}
+
+					if ($.VARS.options.pagination === true) {
+						$.pagination();
+					}
+
+					$.setActive($.VARS.slides[0]);
+					setTimeout($.start, $.VARS.options.delay);
+				},
+				setActive: function (slide) {
+					for (let i = 0; i < $.VARS.slides.length; i++) {
+						$.VARS.slides[i].classList.remove("hds_slide_active");
+					}
+					slide.classList.add("hds_slide_active");
+
+					if ($.VARS.options.pagination === true) {
+						let index = 0;
+						for (let i = 0; i < $.VARS.slides.length; i++) {
+							if ($.VARS.slides[i].classList.contains("hds_slide_active")) {
+								index = i;
+								break;
+							}
+						}
+
+						for (let i = 0; i < $.VARS.pagination.length; i++) {
+							$.VARS.pagination[i].classList.remove("hds_pagination_item_active");
+						}
+						$.VARS.pagination[index].classList.add("hds_pagination_item_active");
+					}
+				},
+				start: function () {
+					$.VARS.timer = setInterval($.next, $.VARS.options.speed);
+				},
+				next: function () {
+					clearInterval($.VARS.timer);
+					const active = $.VARS.slider.getElementsByClassName("hds_slide_active")[0];
+					if (active.nextElementSibling === null) {
+						$.setActive($.VARS.slides[0]);
+					} else {
+						$.setActive(active.nextElementSibling);
+					}
+					$.start();
+				},
+				prev: function () {
+					clearInterval($.VARS.timer);
+
+					const active = $.VARS.slider.getElementsByClassName("hds_slide_active")[0];
+					if (active.previousElementSibling === null) {
+						$.setActive($.VARS.slides[$.VARS.slides.length - 1]);
+					} else {
+						$.setActive(active.previousElementSibling);
+					}
+
+					$.start();
+				},
+				navigation: function () {
+					const nav = `<div class = "hds_nav_item hds_prev"><</div><div class = "hds_nav_item hds_next">></div>`;
+					$.VARS.slider.insertAdjacentHTML("beforeend", nav);
+
+					const prev = $.VARS.slider.getElementsByClassName("hds_prev")[0];
+					const next = $.VARS.slider.getElementsByClassName("hds_next")[0];
+
+					prev.addEventListener("click", $.prev);
+					next.addEventListener("click", $.next);
+				},
+				pagination: function () {
+					let html = '<div class = "hds_pagination">';
+					for (let i = 0; i < $.VARS.slides.length; i++) {
+						html += `<div class = "hds_pagination_item"></div>`;
+					}
+					html += "</div>";
+
+					$.VARS.slider.insertAdjacentHTML("beforeend", html);
+					$.VARS.pagination = $.VARS.slider.getElementsByClassName("hds_pagination_item");
+
+					for (let i = 0; i < $.VARS.pagination.length; i++) {
+						$.VARS.pagination[i].addEventListener("click", function () {
+							if (this.classList.contains("hds_pagination_item_active")) {
+								return;
+							}
+							let index = 0;
+							for (let i = 0; i < $.VARS.pagination.length; i++) {
+								if ($.VARS.pagination[i] === this) {
+									index = i;
+									break;
+								}
+							}
+							$.setActive($.VARS.slides[index]);
+						});
+					}
+				},
+			};
+
+			$.init(el, options);
+		};
+	</script>
+	<script>
+		HDS("#slider");
+	</script>
+</body>
+
+</html>
