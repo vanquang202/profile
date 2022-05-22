@@ -416,14 +416,12 @@
 		}
 
 		.lds-heart {
-			display: inline-block;
 			position: absolute;
 			top: 50%;
-			left: 50%;
-			transform: translate(-50%, -50%);
+			left: 55%;
 			width: 200px;
 			height: 200px;
-			transform: rotate(45deg);
+			transform: translate(-50%, -50%) rotate(45deg);
 			transform-origin: 40px 40px;
 		}
 
@@ -8767,6 +8765,166 @@
 
 		/*# sourceMappingURL=filler.css.map */
 	</style>
+	<style>
+		:root {
+			--argyle: repeating-linear-gradient(120deg,
+					rgba(255, 255, 255, 0.1),
+					rgba(255, 255, 255, 0.1) 1px,
+					transparent 1px,
+					transparent 60px),
+				repeating-linear-gradient(60deg,
+					rgba(255, 255, 255, 0.1),
+					rgba(255, 255, 255, 0.1) 1px,
+					transparent 1px,
+					transparent 60px),
+				linear-gradient(60deg,
+					rgba(0, 0, 0, 0.1) 25%,
+					transparent 25%,
+					transparent 75%,
+					rgba(0, 0, 0, 0.1) 75%,
+					rgba(0, 0, 0, 0.1)),
+				linear-gradient(120deg,
+					rgba(0, 0, 0, 0.1) 25%,
+					transparent 25%,
+					transparent 75%,
+					rgba(0, 0, 0, 0.1) 75%,
+					rgba(0, 0, 0, 0.1));
+			background-size: 70px 120px;
+			--tartan: repeating-linear-gradient(transparent,
+					transparent 50px,
+					rgba(0, 0, 0, 0.4) 50px,
+					rgba(0, 0, 0, 0.4) 53px,
+					transparent 53px,
+					transparent 63px,
+					rgba(0, 0, 0, 0.4) 63px,
+					rgba(0, 0, 0, 0.4) 66px,
+					transparent 66px,
+					transparent 116px,
+					rgba(0, 0, 0, 0.5) 116px,
+					rgba(0, 0, 0, 0.5) 166px,
+					rgba(255, 255, 255, 0.2) 166px,
+					rgba(255, 255, 255, 0.2) 169px,
+					rgba(0, 0, 0, 0.5) 169px,
+					rgba(0, 0, 0, 0.5) 179px,
+					rgba(255, 255, 255, 0.2) 179px,
+					rgba(255, 255, 255, 0.2) 182px,
+					rgba(0, 0, 0, 0.5) 182px,
+					rgba(0, 0, 0, 0.5) 232px,
+					transparent 232px),
+				repeating-linear-gradient(270deg,
+					transparent,
+					transparent 50px,
+					rgba(0, 0, 0, 0.4) 50px,
+					rgba(0, 0, 0, 0.4) 53px,
+					transparent 53px,
+					transparent 63px,
+					rgba(0, 0, 0, 0.4) 63px,
+					rgba(0, 0, 0, 0.4) 66px,
+					transparent 66px,
+					transparent 116px,
+					rgba(0, 0, 0, 0.5) 116px,
+					rgba(0, 0, 0, 0.5) 166px,
+					rgba(255, 255, 255, 0.2) 166px,
+					rgba(255, 255, 255, 0.2) 169px,
+					rgba(0, 0, 0, 0.5) 169px,
+					rgba(0, 0, 0, 0.5) 179px,
+					rgba(255, 255, 255, 0.2) 179px,
+					rgba(255, 255, 255, 0.2) 182px,
+					rgba(0, 0, 0, 0.5) 182px,
+					rgba(0, 0, 0, 0.5) 232px,
+					transparent 232px),
+				repeating-linear-gradient(125deg,
+					transparent,
+					transparent 2px,
+					rgba(0, 0, 0, 0.2) 2px,
+					rgba(0, 0, 0, 0.2) 3px,
+					transparent 3px,
+					transparent 5px,
+					rgba(0, 0, 0, 0.2) 5px);
+		}
+
+		.bookshelf {
+			width: 100%;
+			margin-top: 32px;
+			display: flex;
+			flex-wrap: wrap;
+		}
+
+		.book {
+			width: 50px;
+			height: 280px;
+			position: relative;
+			margin-left: 1px;
+			transform-style: preserve-3d;
+			transform: translateZ(0) rotateY(0);
+			transition: transform 1s;
+		}
+
+		.side {
+			position: absolute;
+			border: 2px solid black;
+			border-radius: 3px;
+			font-weight: bold;
+			color: black;
+			text-align: center;
+			transform-origin: center left;
+		}
+
+		.spine {
+			position: relative;
+			width: 50px;
+			height: 280px;
+			/* Patterns from: https://projects.verou.me/css3patterns/ */
+			background-image: var(--tartan);
+			transform: rotateY(0deg) translateZ(0px);
+		}
+
+		.spine-title {
+			margin: 2px;
+			position: absolute;
+			top: 0px;
+			left: 0px;
+			font-size: 12px;
+			color: gold;
+			writing-mode: vertical-rl;
+			text-orientation: mixed;
+		}
+
+		.spine-author {
+			position: absolute;
+			color: goldenrod;
+			bottom: 0px;
+			left: 20%;
+			/* no idea why 20% centers it */
+		}
+
+		.top {
+			width: 50px;
+			height: 190px;
+			top: -2px;
+			/* hmm, why -2 and not 0? */
+			background-image: linear-gradient(90deg, white 90%, gray 10%);
+			background-size: 5px 5px;
+			transform: rotateX(90deg) translateZ(95px) translateY(-95px);
+		}
+
+		.cover {
+			width: 190px;
+			height: 280px;
+			top: 0px;
+			background-image: url("https://picsum.photos/190/280");
+			background-size: contain;
+			background-repeat: round;
+			left: 50px;
+			transform: rotateY(90deg) translateZ(0);
+			transition: transform 1s;
+		}
+
+		.book:hover {
+			z-index: 1;
+			transform: rotateX(-25deg) rotateY(-40deg) rotateZ(-15deg) translateY(50px) translateX(-30px);
+		}
+	</style>
 </head>
 
 <body>
@@ -8964,7 +9122,7 @@
 
 								<div style="    transform: rotate(30deg); position: fixed;
 								right: 91px;
-								top: 50px;" class="perspective-container">
+								top: 0px;" class="perspective-container">
 									<!--container div to apply hover effect to all the children elements -->
 									<div class="perspective-text">
 										<p>&nbsp;</p>
@@ -8983,6 +9141,65 @@
 
 								</div>
 
+							</div>
+							<div class="overlay"></div>
+						</div>
+						<div class="slide" style="background-image: url(https://source.unsplash.com/random/5)">
+							<div class="slide_content">
+								<h3>Các dự án </h3>
+
+								<div class="bookshelf">
+									<!-- Add Books To The Bookshelf -->
+									<div style="width: 110px !important" class="book">
+										<div class="side spine">
+											<span class="spine-title"> php , js , css , jquery</span>
+											<span class="spine-author">Project mạng xã hội</span>
+										</div>
+										<div class="side top"></div>
+										<div class="side cover">
+											<iframe width="100%" height="100%"
+												src="https://www.youtube.com/embed/r8WHuW8XJDI"
+												title="YouTube video player" frameborder="0"
+												allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+												allowfullscreen></iframe>
+										</div>
+									</div>
+									<div style="width: 110px !important" class="book">
+										<div class="side spine">
+											<span class="spine-title">laravel , vuejs , pusher</span>
+											<span class="spine-author">Project chát và diễn đàn</span>
+										</div>
+										<div class="side top"></div>
+										<div class="side cover">
+											<a href="http://github.com/vanquang202">
+												<img width="100%" style="height : 100%" src="./git.png" alt="">
+											</a>
+										</div>
+									</div>
+									<div style="width: 110px !important" class="book">
+										<div class="side spine">
+											<span class="spine-title"> laravel , angular</span>
+											<span class="spine-author"> Dự án quiz trường (đang triển khai) </span>
+										</div>
+										<div class="side top"></div>
+										<div class="side cover">
+											<a href="http://github.com/vanquang202">
+												<img width="100%" style="height : 100%" src="./git.png" alt="">
+											</a>
+										</div>
+									</div>
+									<!-- Thanks for watching -->
+								</div>
+
+								<div class="row">
+									<div class="col-6">
+										<!-- <iframe width="100%" height="100%"
+											src="https://www.youtube.com/embed/r8WHuW8XJDI" title="YouTube video player"
+											frameborder="0"
+											allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+											allowfullscreen></iframe> -->
+									</div>
+								</div>
 							</div>
 							<div class="overlay"></div>
 						</div>
@@ -9502,6 +9719,55 @@ Description: Pure Vanilla JS Slider
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.9.1/highlight.min.js"></script>
 	<script>hljs.initHighlightingOnLoad();</script>
 
+
+	<script>
+		function getRandomInt(min, max) {
+			min = Math.ceil(min);
+			max = Math.floor(max);
+			return Math.floor(Math.random() * (max - min + 1)) + min;
+		}
+
+		function randomChoice(array) {
+			return array[Math.floor(Math.random() * array.length)];
+		}
+
+		let spines = Object.values(document.getElementsByClassName("spine"));
+		let covers = Object.values(document.getElementsByClassName("cover"));
+		let tops = Object.values(document.getElementsByClassName("top"));
+
+		let availablePatterns = ["argyle", "tartan"]; // we could probably get these programatically
+		let availableColours = [
+			"maroon",
+			"darkgreen",
+			"darkolivegreen",
+			"brown",
+			"saddlebrown",
+			"sienna",
+			"midnightblue",
+		];
+
+		// assign a random height, pattern and colour to each book
+		spines.map(function (s, i) {
+			let randomHeight = getRandomInt(220, 290);
+			s.style.height = `${randomHeight}px`;
+			s.style.top = `${280 - randomHeight}px`;
+
+			let randomPattern = randomChoice(availablePatterns);
+			s.style.backgroundImage = `var(--${randomPattern})`;
+
+			let randomColor = randomChoice(availableColours);
+			s.style.backgroundColor = randomColor;
+
+			covers[i].style.height = `${randomHeight}px`;
+			covers[i].style.top = `${280 - randomHeight}px`;
+
+			tops[i].style.top = `${280 - randomHeight}px`;
+		});
+		window.dataLayer = window.dataLayer || [];
+		function gtag() { dataLayer.push(arguments); }
+		gtag('js', new Date());
+		gtag('config', 'G-LLWL5N9CSM');
+	</script>
 </body>
 
 </html>
